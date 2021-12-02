@@ -11,16 +11,17 @@ sources = [
 
     ArchiveSource("http://repo.msys2.org/mingw/i686/mingw-w64-i686-hdf5-1.12.0-2-any.pkg.tar.zst", "d9ade0d0fddfdeca3ea9de00b066e330e1573c547609a12b81c6a080b2c19f3e", unpack_target = "i686-w64-mingw32"),
     ArchiveSource("http://repo.msys2.org/mingw/i686/mingw-w64-i686-szip-2.1.1-2-any.pkg.tar.xz", "58b5efe1420a2bfd6e92cf94112d29b03ec588f54f4a995a1b26034076f0d369", unpack_target = "i686-w64-mingw32"),
-    ArchiveSource("http://repo.msys2.org/mingw/i686/mingw-w64-i686-zlib-1.2.11-7-any.pkg.tar.xz", "addf6c52134027407640f1cbdf4efc5b64430f3a286cb4e4c4f5dbb44ce55a42", unpack_target = "i686-w64-mingw32"),
+    ArchiveSource("https://mirror.msys2.org/mingw/mingw32/mingw-w64-i686-zlib-1.2.11-9-any.pkg.tar.zst", "8d594fc14497d41a66415bfdd200d7d1d56a6ecd3fe81b9190bec0c4841a5eff", unpack_target = "i686-w64-mingw32"),
     # We need some special compiler support libraries from mingw for i686
     ArchiveSource("http://repo.msys2.org/mingw/i686/mingw-w64-i686-gcc-libs-10.2.0-5-any.pkg.tar.zst", "e03a63b24695951a1e80def754d6bd128744eaf1e562308ded31e989636e7651", unpack_target = "i686-w64-mingw32"),
 
     ArchiveSource("http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-hdf5-1.12.0-2-any.pkg.tar.zst", "549462ad99a079ff725ac4bd1f662d3594515320ea324a7263a647578b258d86", unpack_target = "x86_64-w64-mingw32"),
     ArchiveSource("http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-szip-2.1.1-2-any.pkg.tar.xz", "ec8fe26370b0673c4b91f5ccf3404907dc7c24cb9d75c7b8830aa93a7c13ace7", unpack_target = "x86_64-w64-mingw32"),
-    ArchiveSource("http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-zlib-1.2.11-7-any.pkg.tar.xz", "1decf05b8ae6ab10ddc9035929014837c18dd76da825329023da835aec53cec2", unpack_target = "x86_64-w64-mingw32"),
+    ArchiveSource("https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-zlib-1.2.11-9-any.pkg.tar.zst", "9da9ebafaef832dba2f442ad44d9ae8759784b86478dcbe326500195f8ea6339", unpack_target = "x86_64-w64-mingw32"),
 
     # Can't use conda-forge on other platforms since it links too many libraries, but apparently on aarch64 is fine
     ArchiveSource("https://anaconda.org/conda-forge/hdf5/1.12.0/download/linux-aarch64/hdf5-1.12.0-nompi_h1022a3e_102.tar.bz2", "605aff906fd0fca9a52da6ad9b48607fab5cb26e2615d3827a1f318d6e103c4a", unpack_target = "aarch64-linux-gnu"),
+    ArchiveSource("https://anaconda.org/conda-forge/hdf5/1.12.0/download/osx-arm64/hdf5-1.12.0-nompi_had0e5e0_107.tar.bz2", "79bde5381be9a6bc9696173e1be7dfb7c2675e1d4efee5105b8d66cb7cb93a16", unpack_target = "aarch64-apple-darwin20"),
 ]
 
 # Bash recipe for building across all platforms
@@ -60,8 +61,8 @@ else
     mv ${LIBSDIR}/* ${libdir}
 
     # Use headers and license from aarch64-linux-gnu with the hope that they'll be fine
-    mv aarch64-*/include/* ${includedir}
-    install_license aarch64-*/info/licenses/COPYING
+    mv aarch64-linux-gnu/include/* ${includedir}
+    install_license aarch64-linux-gnu/info/licenses/COPYING
 fi
 
 # We want to have the files with the simple name lib.extension, without
@@ -96,6 +97,7 @@ platforms = [
     Platform("x86_64", "macos"),
     Platform("x86_64", "windows"),
     Platform("i686", "windows"),
+    Platform("aarch64", "macos"),
 ]
 
 # The products that we will ensure are always built
@@ -112,4 +114,4 @@ dependencies = [
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
-build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies)
+build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies; julia_compat="1.6")
